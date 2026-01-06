@@ -1,0 +1,816 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Zoho AI-SDR Pro | Production Ready</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+        
+        .app-container {
+            max-width: 1600px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        .header {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(20px);
+            border-radius: 20px;
+            padding: 30px;
+            margin-bottom: 30px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .header::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, #667eea, #764ba2, #f093fb, #f5576c);
+            background-size: 400% 400%;
+            animation: gradient 3s ease infinite;
+        }
+        
+        @keyframes gradient {
+            0%, 100% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+        }
+        
+        .header h1 {
+            font-size: 3em;
+            font-weight: 800;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 10px;
+        }
+        
+        .header p {
+            font-size: 1.2em;
+            color: #666;
+            margin-bottom: 20px;
+        }
+        
+        .status-container {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            flex-wrap: wrap;
+        }
+        
+        .status-badge {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 10px 20px;
+            border-radius: 25px;
+            font-weight: 600;
+            font-size: 14px;
+            transition: all 0.3s ease;
+        }
+        
+        .status-badge.running {
+            background: linear-gradient(135deg, #4CAF50, #45a049);
+            color: white;
+            box-shadow: 0 4px 15px rgba(76, 175, 80, 0.3);
+        }
+        
+        .status-badge.error {
+            background: linear-gradient(135deg, #f44336, #d32f2f);
+            color: white;
+            box-shadow: 0 4px 15px rgba(244, 67, 54, 0.3);
+        }
+        
+        .pulse {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: currentColor;
+            animation: pulse 2s infinite;
+        }
+        
+        @keyframes pulse {
+            0%, 100% { opacity: 1; transform: scale(1); }
+            50% { opacity: 0.5; transform: scale(1.2); }
+        }
+        
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+        
+        .stat-card {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(20px);
+            border-radius: 15px;
+            padding: 25px;
+            text-align: center;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            border: 1px solid rgba(255,255,255,0.2);
+            transition: transform 0.3s ease;
+        }
+        
+        .stat-card:hover {
+            transform: translateY(-5px);
+        }
+        
+        .stat-icon {
+            font-size: 2.5em;
+            margin-bottom: 15px;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        
+        .stat-number {
+            font-size: 2.5em;
+            font-weight: 800;
+            color: #333;
+            margin-bottom: 5px;
+        }
+        
+        .stat-label {
+            color: #666;
+            font-weight: 500;
+        }
+        
+        .main-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(500px, 1fr));
+            gap: 30px;
+            margin-bottom: 30px;
+        }
+        
+        .card {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(20px);
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            border: 1px solid rgba(255,255,255,0.2);
+            transition: all 0.3s ease;
+        }
+        
+        .card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 30px 60px rgba(0,0,0,0.15);
+        }
+        
+        .card-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 25px;
+            padding-bottom: 15px;
+            border-bottom: 2px solid #f0f0f0;
+        }
+        
+        .card-icon {
+            font-size: 2em;
+            margin-right: 15px;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        
+        .card-title {
+            font-size: 1.5em;
+            font-weight: 700;
+            color: #333;
+        }
+        
+        .form-group {
+            margin-bottom: 20px;
+        }
+        
+        .form-label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #555;
+            font-size: 14px;
+        }
+        
+        .form-input, .form-select, .form-textarea {
+            width: 100%;
+            padding: 15px 20px;
+            border: 2px solid #e0e0e0;
+            border-radius: 12px;
+            font-size: 14px;
+            font-family: inherit;
+            transition: all 0.3s ease;
+            background: rgba(255,255,255,0.8);
+        }
+        
+        .form-input:focus, .form-select:focus, .form-textarea:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 4px rgba(102, 126, 234, 0.1);
+            background: white;
+        }
+        
+        .form-textarea {
+            height: 120px;
+            resize: vertical;
+        }
+        
+        .btn {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 16px 32px;
+            border: none;
+            border-radius: 12px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: 600;
+            width: 100%;
+            margin-top: 15px;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+            transition: left 0.5s;
+        }
+        
+        .btn:hover::before {
+            left: 100%;
+        }
+        
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 15px 30px rgba(102, 126, 234, 0.4);
+        }
+        
+        .btn:disabled {
+            opacity: 0.7;
+            cursor: not-allowed;
+            transform: none;
+        }
+        
+        .btn-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-top: 20px;
+        }
+        
+        .btn-small {
+            padding: 12px 24px;
+            font-size: 14px;
+            margin: 0;
+        }
+        
+        .result {
+            background: linear-gradient(135deg, #e8f5e8 0%, #f0f8f0 100%);
+            border: 2px solid #4caf50;
+            border-radius: 15px;
+            padding: 25px;
+            margin-top: 20px;
+            animation: slideIn 0.5s ease;
+        }
+        
+        .result.error {
+            background: linear-gradient(135deg, #ffe8e8 0%, #fff0f0 100%);
+            border-color: #f44336;
+        }
+        
+        @keyframes slideIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .result-grid {
+            display: grid;
+            gap: 15px;
+        }
+        
+        .result-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px 0;
+            border-bottom: 1px solid rgba(0,0,0,0.1);
+        }
+        
+        .result-item:last-child {
+            border-bottom: none;
+        }
+        
+        .result-label {
+            font-weight: 700;
+            color: #333;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .result-value {
+            color: #666;
+            font-weight: 500;
+            text-align: right;
+            max-width: 60%;
+            word-break: break-word;
+        }
+        
+        .loading-spinner {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid rgba(255,255,255,0.3);
+            border-radius: 50%;
+            border-top-color: white;
+            animation: spin 1s ease-in-out infinite;
+            margin-right: 10px;
+        }
+        
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+        
+        .full-width-card {
+            grid-column: 1 / -1;
+        }
+        
+        .demo-banner {
+            background: linear-gradient(135deg, #FF6B6B, #4ECDC4);
+            color: white;
+            padding: 20px;
+            border-radius: 15px;
+            text-align: center;
+            margin-bottom: 30px;
+            font-weight: 600;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+        }
+        
+        @media (max-width: 768px) {
+            .main-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .app-container {
+                padding: 15px;
+            }
+            
+            .header h1 {
+                font-size: 2.2em;
+            }
+            
+            .card {
+                padding: 20px;
+            }
+        }
+        
+        .toast {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: white;
+            padding: 15px 20px;
+            border-radius: 10px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            z-index: 1000;
+            transform: translateX(400px);
+            transition: transform 0.3s ease;
+        }
+        
+        .toast.show {
+            transform: translateX(0);
+        }
+        
+        .toast.success {
+            border-left: 4px solid #4CAF50;
+        }
+        
+        .toast.error {
+            border-left: 4px solid #f44336;
+        }
+    </style>
+</head>
+<body>
+    <div class="app-container">
+        <div class="header">
+            <h1><i class="fas fa-robot"></i> Zoho AI-SDR Pro</h1>
+            <p>Production-Ready AI Sales Development Representative</p>
+            <div class="status-container">
+                <div id="status" class="status-badge running">
+                    <div class="pulse"></div>
+                    <span>System Online</span>
+                </div>
+                <div class="status-badge" style="background: linear-gradient(135deg, #2196F3, #1976D2); color: white;">
+                    <i class="fas fa-shield-alt"></i>
+                    <span>Production Ready</span>
+                </div>
+            </div>
+        </div>
+        
+        <div class="demo-banner">
+            <i class="fas fa-database"></i> Sample Coimbatore Leads: TechWeave Solutions (Rajesh Kumar - CEO) | Coimbatore Auto Parts (Priya Selvam - Founder) | SmartManufacturing Co (Arun Krishnan - CTO)
+        </div>
+        
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-icon"><i class="fas fa-envelope"></i></div>
+                <div class="stat-number" id="emailsProcessed">0</div>
+                <div class="stat-label">Emails Processed</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon"><i class="fas fa-users"></i></div>
+                <div class="stat-number" id="leadsAnalyzed">0</div>
+                <div class="stat-label">Leads Analyzed</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon"><i class="fas fa-chart-line"></i></div>
+                <div class="stat-number" id="avgScore">0</div>
+                <div class="stat-label">Avg Lead Score</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon"><i class="fas fa-clock"></i></div>
+                <div class="stat-number" id="systemUptime">100%</div>
+                <div class="stat-label">System Uptime</div>
+            </div>
+        </div>
+        
+        <div class="main-grid">
+            <div class="card">
+                <div class="card-header">
+                    <div class="card-icon"><i class="fas fa-envelope-open-text"></i></div>
+                    <div class="card-title">Email Intelligence</div>
+                </div>
+                
+                <div class="form-group">
+                    <label class="form-label"><i class="fas fa-at"></i> From Email</label>
+                    <input type="email" class="form-input" id="fromEmail" value="rajesh@techweave.in" placeholder="lead@company.com">
+                </div>
+                
+                <div class="form-group">
+                    <label class="form-label"><i class="fas fa-tag"></i> Subject</label>
+                    <input type="text" class="form-input" id="subject" value="Re: AI Solutions Proposal" placeholder="Email subject">
+                </div>
+                
+                <div class="form-group">
+                    <label class="form-label"><i class="fas fa-comment-alt"></i> Email Body</label>
+                    <textarea class="form-textarea" id="emailBody" placeholder="Email content...">Hi, I am very interested in your AI solutions. Can we schedule a demo call this week?</textarea>
+                </div>
+                
+                <div class="form-group">
+                    <label class="form-label"><i class="fas fa-id-badge"></i> Lead ID</label>
+                    <input type="text" class="form-input" id="leadId" value="LEAD_001" placeholder="Lead ID">
+                </div>
+                
+                <button class="btn" onclick="processEmail()">
+                    <span id="emailBtnText"><i class="fas fa-brain"></i> Analyze Email</span>
+                </button>
+                
+                <div id="emailResult"></div>
+            </div>
+            
+            <div class="card">
+                <div class="card-header">
+                    <div class="card-icon"><i class="fas fa-user-tie"></i></div>
+                    <div class="card-title">Lead Intelligence</div>
+                </div>
+                
+                <div class="form-group">
+                    <label class="form-label"><i class="fas fa-building"></i> Company</label>
+                    <input type="text" class="form-input" id="company" value="TechWeave Solutions" placeholder="Company name">
+                </div>
+                
+                <div class="form-group">
+                    <label class="form-label"><i class="fas fa-user"></i> Full Name</label>
+                    <input type="text" class="form-input" id="fullName" value="Rajesh Kumar" placeholder="Contact name">
+                </div>
+                
+                <div class="form-group">
+                    <label class="form-label"><i class="fas fa-crown"></i> Designation</label>
+                    <select class="form-select" id="designation">
+                        <option value="CEO">CEO</option>
+                        <option value="Founder">Founder</option>
+                        <option value="CTO">CTO</option>
+                        <option value="Director">Director</option>
+                        <option value="Manager">Manager</option>
+                        <option value="Lead Engineer">Lead Engineer</option>
+                    </select>
+                </div>
+                
+                <div class="form-group">
+                    <label class="form-label"><i class="fas fa-industry"></i> Industry</label>
+                    <select class="form-select" id="industry">
+                        <option value="Technology">Technology</option>
+                        <option value="Manufacturing">Manufacturing</option>
+                        <option value="Automotive">Automotive</option>
+                        <option value="Textile">Textile</option>
+                        <option value="Engineering">Engineering</option>
+                    </select>
+                </div>
+                
+                <button class="btn" onclick="analyzeLead()">
+                    <span id="leadBtnText"><i class="fas fa-chart-bar"></i> Score Lead</span>
+                </button>
+                
+                <div id="leadResult"></div>
+            </div>
+        </div>
+        
+        <div class="card full-width-card">
+            <div class="card-header">
+                <div class="card-icon"><i class="fas fa-flask"></i></div>
+                <div class="card-title">AI Testing Suite</div>
+            </div>
+            
+            <div class="btn-grid">
+                <button class="btn btn-small" onclick="testPositiveInterest()">
+                    <i class="fas fa-thumbs-up"></i> Positive Interest
+                </button>
+                <button class="btn btn-small" onclick="testNotInterested()">
+                    <i class="fas fa-thumbs-down"></i> Not Interested
+                </button>
+                <button class="btn btn-small" onclick="testUnsubscribe()">
+                    <i class="fas fa-ban"></i> Unsubscribe
+                </button>
+                <button class="btn btn-small" onclick="testComplaint()">
+                    <i class="fas fa-exclamation-triangle"></i> Complaint
+                </button>
+                <button class="btn btn-small" onclick="testCEOLead()">
+                    <i class="fas fa-star"></i> CEO Lead
+                </button>
+                <button class="btn btn-small" onclick="checkHealth()">
+                    <i class="fas fa-heartbeat"></i> Health Check
+                </button>
+                <button class="btn btn-small" onclick="loadDemoData()">
+                    <i class="fas fa-download"></i> Load Demo
+                </button>
+                <button class="btn btn-small" onclick="clearAll()">
+                    <i class="fas fa-trash"></i> Clear All
+                </button>
+            </div>
+            
+            <div id="testResult"></div>
+        </div>
+    </div>
+    
+    <script>
+        const API_BASE = 'http://localhost:3001';
+        let stats = { emailsProcessed: 0, leadsAnalyzed: 0, totalScore: 0 };
+        
+        function showToast(message, type = 'success') {
+            const toast = document.createElement('div');
+            toast.className = `toast ${type}`;
+            toast.innerHTML = `<i class="fas fa-${type === 'success' ? 'check-circle' : 'exclamation-circle'}"></i> ${message}`;
+            document.body.appendChild(toast);
+            
+            setTimeout(() => toast.classList.add('show'), 100);
+            setTimeout(() => {
+                toast.classList.remove('show');
+                setTimeout(() => document.body.removeChild(toast), 300);
+            }, 3000);
+        }
+        
+        function showLoading(btnId) {
+            const btn = document.getElementById(btnId);
+            btn.disabled = true;
+            btn.innerHTML = '<span class="loading-spinner"></span>Processing...';
+        }
+        
+        function hideLoading(btnId, originalText) {
+            const btn = document.getElementById(btnId);
+            btn.disabled = false;
+            btn.innerHTML = originalText;
+        }
+        
+        function updateStats() {
+            document.getElementById('emailsProcessed').textContent = stats.emailsProcessed;
+            document.getElementById('leadsAnalyzed').textContent = stats.leadsAnalyzed;
+            document.getElementById('avgScore').textContent = stats.leadsAnalyzed > 0 ? 
+                Math.round(stats.totalScore / stats.leadsAnalyzed) : 0;
+        }
+        
+        function createResultHTML(data, type) {
+            if (type === 'email') {
+                return `
+                    <div class="result">
+                        <div class="result-grid">
+                            <div class="result-item">
+                                <span class="result-label"><i class="fas fa-bullseye"></i> Intent</span>
+                                <span class="result-value">${data.intent}</span>
+                            </div>
+                            <div class="result-item">
+                                <span class="result-label"><i class="fas fa-percentage"></i> Confidence</span>
+                                <span class="result-value">${(data.confidence * 100).toFixed(1)}%</span>
+                            </div>
+                            <div class="result-item">
+                                <span class="result-label"><i class="fas fa-smile"></i> Sentiment</span>
+                                <span class="result-value">${data.sentiment}</span>
+                            </div>
+                            <div class="result-item">
+                                <span class="result-label"><i class="fas fa-tasks"></i> Actions</span>
+                                <span class="result-value">${data.actions.join(', ')}</span>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            } else {
+                return `
+                    <div class="result">
+                        <div class="result-grid">
+                            <div class="result-item">
+                                <span class="result-label"><i class="fas fa-trophy"></i> Score</span>
+                                <span class="result-value">${data.score}/100</span>
+                            </div>
+                            <div class="result-item">
+                                <span class="result-label"><i class="fas fa-flag"></i> Priority</span>
+                                <span class="result-value">${data.recommendation}</span>
+                            </div>
+                            <div class="result-item">
+                                <span class="result-label"><i class="fas fa-heart"></i> Sentiment</span>
+                                <span class="result-value">${data.sentiment}</span>
+                            </div>
+                            <div class="result-item">
+                                <span class="result-label"><i class="fas fa-language"></i> Messages</span>
+                                <span class="result-value">Tamil & English Generated</span>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            }
+        }
+        
+        async function processEmail() {
+            showLoading('emailBtnText');
+            
+            try {
+                const response = await fetch(`${API_BASE}/ai-sdr-core`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        action: 'process_email_reply',
+                        data: {
+                            from_email: document.getElementById('fromEmail').value,
+                            subject: document.getElementById('subject').value,
+                            body: document.getElementById('emailBody').value,
+                            lead_id: document.getElementById('leadId').value
+                        }
+                    })
+                });
+                
+                const result = await response.json();
+                
+                if (result.success) {
+                    stats.emailsProcessed++;
+                    updateStats();
+                    document.getElementById('emailResult').innerHTML = createResultHTML(result, 'email');
+                    showToast('Email analyzed successfully!');
+                } else {
+                    throw new Error(result.error);
+                }
+            } catch (error) {
+                document.getElementById('emailResult').innerHTML = `<div class="result error"><i class="fas fa-exclamation-triangle"></i> ${error.message}</div>`;
+                showToast('Email analysis failed', 'error');
+            } finally {
+                hideLoading('emailBtnText', '<i class="fas fa-brain"></i> Analyze Email');
+            }
+        }
+        
+        async function analyzeLead() {
+            showLoading('leadBtnText');
+            
+            try {
+                const response = await fetch(`${API_BASE}/ai-sdr-core`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        action: 'analyze_lead',
+                        data: {
+                            lead_data: {
+                                lead_id: 'LEAD_' + Date.now(),
+                                Company: document.getElementById('company').value,
+                                Full_Name: document.getElementById('fullName').value,
+                                Designation: document.getElementById('designation').value,
+                                Industry: document.getElementById('industry').value
+                            }
+                        }
+                    })
+                });
+                
+                const result = await response.json();
+                
+                if (result.success) {
+                    stats.leadsAnalyzed++;
+                    stats.totalScore += result.score;
+                    updateStats();
+                    document.getElementById('leadResult').innerHTML = createResultHTML(result, 'lead');
+                    showToast('Lead scored successfully!');
+                } else {
+                    throw new Error(result.error);
+                }
+            } catch (error) {
+                document.getElementById('leadResult').innerHTML = `<div class="result error"><i class="fas fa-exclamation-triangle"></i> ${error.message}</div>`;
+                showToast('Lead analysis failed', 'error');
+            } finally {
+                hideLoading('leadBtnText', '<i class="fas fa-chart-bar"></i> Score Lead');
+            }
+        }
+        
+        async function testPositiveInterest() {
+            document.getElementById('emailBody').value = 'Hi, I am very interested in your AI solutions. Can we schedule a demo call this week?';
+            await processEmail();
+        }
+        
+        async function testNotInterested() {
+            document.getElementById('emailBody').value = 'Thank you for reaching out, but we are not interested at this time.';
+            await processEmail();
+        }
+        
+        async function testUnsubscribe() {
+            document.getElementById('emailBody').value = 'Please unsubscribe me from all future communications.';
+            await processEmail();
+        }
+        
+        async function testComplaint() {
+            document.getElementById('emailBody').value = 'This is spam. Please stop sending me these emails immediately.';
+            await processEmail();
+        }
+        
+        async function testCEOLead() {
+            document.getElementById('designation').value = 'CEO';
+            await analyzeLead();
+        }
+        
+        async function checkHealth() {
+            try {
+                const response = await fetch(`${API_BASE}/health`);
+                const result = await response.json();
+                
+                document.getElementById('testResult').innerHTML = `
+                    <div class="result">
+                        <div class="result-item">
+                            <span class="result-label"><i class="fas fa-heartbeat"></i> Status</span>
+                            <span class="result-value">${result.status}</span>
+                        </div>
+                        <div class="result-item">
+                            <span class="result-label"><i class="fas fa-server"></i> Service</span>
+                            <span class="result-value">${result.service}</span>
+                        </div>
+                    </div>
+                `;
+                
+                document.getElementById('status').innerHTML = '<div class="pulse"></div><span>System Online</span>';
+                showToast('System health check passed!');
+            } catch (error) {
+                document.getElementById('testResult').innerHTML = `<div class="result error"><i class="fas fa-exclamation-triangle"></i> Health check failed</div>`;
+                document.getElementById('status').className = 'status-badge error';
+                document.getElementById('status').innerHTML = '<i class="fas fa-times"></i><span>System Error</span>';
+                showToast('Health check failed', 'error');
+            }
+        }
+        
+        async function loadDemoData() {
+            document.getElementById('company').value = 'TechWeave Solutions';
+            document.getElementById('fullName').value = 'Rajesh Kumar';
+            document.getElementById('fromEmail').value = 'rajesh@techweave.in';
+            showToast('Demo data loaded successfully!');
+        }
+        
+        function clearAll() {
+            document.getElementById('emailResult').innerHTML = '';
+            document.getElementById('leadResult').innerHTML = '';
+            document.getElementById('testResult').innerHTML = '';
+            stats = { emailsProcessed: 0, leadsAnalyzed: 0, totalScore: 0 };
+            updateStats();
+            showToast('All data cleared!');
+        }
+        
+        window.onload = function() {
+            checkHealth();
+            updateStats();
+        };
+    </script>
+</body>
+</html>

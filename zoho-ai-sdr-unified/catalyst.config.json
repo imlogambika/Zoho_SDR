@@ -1,0 +1,123 @@
+{
+  "project_name": "zoho-ai-sdr-unified",
+  "version": "1.0.0",
+  "description": "Unified AI-SDR System using Zoho Catalyst, CRM, and Zia",
+  "functions": [
+    {
+      "name": "ai-sdr-core",
+      "runtime": "nodejs18",
+      "memory": 1024,
+      "timeout": 60,
+      "triggers": [
+        {
+          "type": "webhook",
+          "source": "zoho_mail"
+        },
+        {
+          "type": "webhook", 
+          "source": "zoho_crm"
+        }
+      ]
+    },
+    {
+      "name": "zia-analyzer",
+      "runtime": "python3.9",
+      "memory": 512,
+      "timeout": 30,
+      "triggers": [
+        {
+          "type": "function_call"
+        }
+      ]
+    },
+    {
+      "name": "lead-processor",
+      "runtime": "nodejs18",
+      "memory": 512,
+      "timeout": 45,
+      "triggers": [
+        {
+          "type": "function_call"
+        },
+        {
+          "type": "cron",
+          "schedule": "0 9 * * *"
+        }
+      ]
+    }
+  ],
+  "datastore": {
+    "tables": [
+      {
+        "name": "ai_decisions",
+        "columns": [
+          {"name": "lead_id", "type": "varchar", "length": 50},
+          {"name": "email_body", "type": "text"},
+          {"name": "intent", "type": "varchar", "length": 50},
+          {"name": "sentiment", "type": "varchar", "length": 20},
+          {"name": "confidence", "type": "double"},
+          {"name": "actions", "type": "text"},
+          {"name": "timestamp", "type": "datetime"}
+        ]
+      },
+      {
+        "name": "lead_scores",
+        "columns": [
+          {"name": "lead_id", "type": "varchar", "length": 50},
+          {"name": "score", "type": "int"},
+          {"name": "sentiment", "type": "varchar", "length": 20},
+          {"name": "keywords", "type": "text"},
+          {"name": "timestamp", "type": "datetime"}
+        ]
+      },
+      {
+        "name": "email_analysis",
+        "columns": [
+          {"name": "lead_id", "type": "varchar", "length": 50},
+          {"name": "text", "type": "text"},
+          {"name": "classified_intent", "type": "varchar", "length": 50},
+          {"name": "confidence_score", "type": "double"},
+          {"name": "urgency_score", "type": "int"},
+          {"name": "buying_intent", "type": "int"},
+          {"name": "timestamp", "type": "datetime"}
+        ]
+      },
+      {
+        "name": "suppression_list",
+        "columns": [
+          {"name": "lead_id", "type": "varchar", "length": 50},
+          {"name": "email", "type": "varchar", "length": 100},
+          {"name": "reason", "type": "varchar", "length": 100},
+          {"name": "active", "type": "boolean"},
+          {"name": "suppressed_date", "type": "datetime"}
+        ]
+      }
+    ]
+  },
+  "crm_customizations": {
+    "leads": {
+      "custom_fields": [
+        {"name": "AI_Score", "type": "Number"},
+        {"name": "AI_Intent", "type": "Picklist", "values": ["POSITIVE_INTEREST", "NEED_MORE_INFO", "NOT_INTERESTED", "COMPLAINT", "UNSUBSCRIBE"]},
+        {"name": "AI_Sentiment", "type": "Picklist", "values": ["positive", "negative", "neutral"]},
+        {"name": "AI_Confidence", "type": "Number"},
+        {"name": "AI_Quality_Score", "type": "Number"},
+        {"name": "Lead_Grade", "type": "Picklist", "values": ["A", "B", "C", "D"]},
+        {"name": "Tamil_Message", "type": "Text"},
+        {"name": "English_Message", "type": "Text"}
+      ]
+    }
+  },
+  "integrations": {
+    "zoho_crm": {
+      "modules": ["Leads", "Deals", "Tasks", "Contacts"],
+      "webhooks": ["lead_created", "lead_updated", "email_received"]
+    },
+    "zoho_mail": {
+      "webhooks": ["email_reply_received", "email_bounced"]
+    },
+    "zoho_zia": {
+      "services": ["sentiment_analysis", "keyword_extraction", "text_analytics"]
+    }
+  }
+}

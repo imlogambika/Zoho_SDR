@@ -1,0 +1,27 @@
+{
+  "name": "zoho-ai-sdr-unified",
+  "version": "1.0.0",
+  "description": "Unified AI-SDR System for Zoho",
+  "main": "index.js",
+  "dependencies": {
+    "axios": "^1.13.2",
+    "express": "^4.22.1",
+    "zcatalyst-sdk-node": "^1.0.0"
+  },
+  "scripts": {
+    "start": "node server.js",
+    "dev": "node server.js",
+    "test": "node test.js",
+    "deploy": "catalyst deploy"
+  },
+  "keywords": [
+    "zoho",
+    "catalyst",
+    "ai",
+    "sdr",
+    "crm",
+    "zia"
+  ],
+  "author": "Zoho AI-SDR Team",
+  "license": "MIT"
+}
