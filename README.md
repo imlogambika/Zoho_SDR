@@ -1,230 +1,176 @@
-🚀 Zoho AI-SDR
+# Zoho AI-SDR Unified System
+
+A complete AI-powered Sales Development Representative system built entirely within the Zoho ecosystem using Catalyst, CRM, and Zia.
+
+## 🎯 Core Features
+
+- **Intelligent Email Processing**: Automatically analyzes email replies using Zia AI
+- **Lead Scoring & Qualification**: AI-driven lead quality assessment
+- **Intent Classification**: Categorizes lead responses into actionable intents
+- **Automated CRM Updates**: Real-time synchronization with Zoho CRM
+- **Multi-language Support**: Tamil and English message generation
+- **Complete Audit Trail**: Full transparency of AI decisions
+
+## 🏗️ Architecture
+
+### Functions
+- **ai-sdr-core** (Node.js): Main email processing and decision engine
+- **zia-analyzer** (Python): Advanced AI analysis using Zia services
+- **lead-processor** (Node.js): CRM operations and lead management
+
+### Data Store Tables
+- `ai_decisions`: AI decision logs with confidence scores
+- `lead_scores`: Lead quality scoring history
+- `email_analysis`: Detailed email analysis results
+- `suppression_list`: Email suppression management
+
+## 🚀 Quick Start
+
+### Prerequisites
+- Zoho Catalyst CLI installed
+- Zoho CRM access
+- Zia AI services enabled
+
+### Installation
+```bash
+# Clone and setup
+cd zoho-ai-sdr-unified
+npm install
+pip install -r requirements.txt
+
+# Deploy to Catalyst
+catalyst deploy
+```
+
+### CRM Setup
+Add these custom fields to Leads module:
+- AI_Score (Number)
+- AI_Intent (Picklist)
+- AI_Sentiment (Picklist)
+- AI_Confidence (Number)
+- Lead_Grade (Picklist)
+- Tamil_Message (Text)
+- English_Message (Text)
+
+## 📊 API Endpoints
+
+### AI-SDR Core
+```javascript
+POST /ai-sdr-core
+{
+  "action": "process_email_reply",
+  "data": {
+    "from_email": "lead@company.com",
+    "subject": "Re: Your proposal",
+    "body": "I'm interested in a demo",
+    "lead_id": "123456"
+  }
+}
+```
+
+### Zia Analyzer
+```python
+POST /zia-analyzer
+{
+  "action": "advanced_sentiment_analysis",
+  "data": {
+    "text": "Email content here",
+    "lead_id": "123456"
+  }
+}
+```
+
+### Lead Processor
+```javascript
+POST /lead-processor
+{
+  "action": "import_leads",
+  "data": {
+    "leads": [
+      {
+        "Company": "TechWeave Solutions",
+        "Full_Name": "Rajesh Kumar",
+        "Email": "rajesh@techweave.in",
+        "Designation": "CEO",
+        "Industry": "Technology"
+      }
+    ]
+  }
+}
+```
+
+## 🤖 AI Decision Flow
 
-AI-Driven Sales Development Representative built entirely on Zoho
+1. **Email Received** → Webhook triggers ai-sdr-core
+2. **Zia Analysis** → Sentiment + keyword extraction
+3. **Intent Classification** → Categorize response intent
+4. **Business Rules** → Execute automated actions
+5. **CRM Update** → Sync lead status and create tasks
+6. **Audit Log** → Record decision with confidence score
 
-Overview
+## 📈 Intent Categories
 
-Zoho AI-SDR is an intelligent lead-qualification system that automates how sales teams analyze, prioritize, and act on email responses.
-The application is built 100% inside the Zoho ecosystem using Zoho Mail, Zoho CRM, Zoho Zia, and Zoho Catalyst.
+- **POSITIVE_INTEREST**: Creates deal + assigns sales task
+- **NEED_MORE_INFO**: Schedules follow-up task
+- **NOT_INTERESTED**: Stops outreach campaigns
+- **COMPLAINT**: Blocks lead + notifies admin
+- **UNSUBSCRIBE**: Permanent suppression
 
-The system functions as an AI-powered Sales Development Representative (SDR) that:
+## 🎯 Lead Scoring Algorithm
 
-Reads inbound email replies
+Base score: 50 points
+- CEO/Founder: +30 points
+- Director/VP: +25 points
+- Manager: +15 points
+- Technology/Manufacturing industry: +20 points
+- Positive sentiment: +15 points
+- Coimbatore location: +10 points
 
-Understands customer intent and sentiment
+## 📊 Reporting Features
 
-Makes explainable decisions
+- Lead analysis summary
+- AI performance metrics
+- Conversion tracking
+- Suppression reports
+- Confidence score analytics
 
-Updates CRM records automatically
+## 🔧 Configuration
 
-Maintains compliance and auditability
+### Webhook Setup
+Configure Zoho Mail webhooks to trigger:
+- `https://your-catalyst-domain/ai-sdr-core` on email replies
 
-No external servers.
-No third-party AI frameworks.
-No vendor lock-in outside Zoho.
+### CRM Workflows
+Set up workflow rules for:
+- Lead creation → Trigger lead analysis
+- Status updates → Create follow-up tasks
+- High-score leads → Auto-assign to sales
 
-Problem Statement
+## 📝 Sample Data
 
-Sales teams lose valuable time manually reviewing email replies and updating CRM records.
-This leads to:
+The system includes 50 Coimbatore-based leads across:
+- Textile companies
+- Manufacturing firms
+- Automotive suppliers
+- Engineering services
+- Technology startups
 
-Slow response times
+## 🔒 Security Features
 
-Missed high-intent leads
+- Email suppression management
+- Complaint handling workflow
+- Data privacy compliance
+- Secure API endpoints
+- Audit logging
 
-Inconsistent follow-ups
+## 📞 Support
 
-Compliance risks (unsubscribe, complaints)
+Built for Zoho Developer Community Hackathon
+- Uses only Zoho native services
+- Leverages Zia AI capabilities
+- Integrates seamlessly with CRM
+- Provides measurable ROI
 
-Traditional automation tools stop at workflows.
-Zoho AI-SDR introduces decision intelligence.
+---
 
-Solution
-
-Zoho AI-SDR transforms every email reply into a deterministic, traceable AI decision.
-
-The system:
-
-Uses Zoho Mail as the communication layer
-
-Uses Zoho CRM as the system of record
-
-Uses Zia for sentiment and intent insights
-
-Uses Catalyst as the decision engine
-
-Each response is classified, logged, and acted upon automatically.
-
-High-Level Architecture
-
-Event-driven, serverless, Zoho-native
-
-Flow:
-
-Email sent via Zoho Mail
-
-Reply received and linked to CRM Lead
-
-CRM workflow triggers Catalyst Function
-
-Zia analyzes sentiment and intent
-
-Decision Engine applies business rules
-
-CRM updated with actions and status
-
-Decision logged for audit and compliance
-
-Intent Classification
-
-The system uses a fixed, explainable intent taxonomy:
-
-POSITIVE_INTEREST
-
-NEED_MORE_INFO
-
-NOT_INTERESTED
-
-COMPLAINT
-
-UNSUBSCRIBE
-
-This avoids ambiguous AI outputs and ensures consistent CRM behavior.
-
-Business Rules
-Intent	Action
-POSITIVE_INTEREST	Create Deal, assign Sales Owner, create Call Task
-NEED_MORE_INFO	Mark as Nurturing, schedule Follow-up
-NOT_INTERESTED	Disqualify Lead, stop outreach
-COMPLAINT	Block lead, flag record, notify admin
-UNSUBSCRIBE	Permanently suppress, mark compliance flag
-
-AI suggests.
-Catalyst decides.
-
-Technology Stack
-
-Platform: Zoho Catalyst
-
-CRM: Zoho CRM
-
-Mail: Zoho Mail
-
-AI & Insights: Zoho Zia
-
-Runtime: Catalyst Functions (Node.js / Java)
-
-Storage: Catalyst Data Store
-
-Catalyst Components
-Functions
-
-lead_ingestion_function
-
-email_reply_handler
-
-zia_analysis_function
-
-decision_engine_function
-
-crm_sync_function
-
-Data Store Tables
-
-ai_decision_logs
-
-lead_intent_history
-
-suppression_list
-
-Each AI decision is stored with:
-
-Lead ID
-
-Intent
-
-Sentiment
-
-Confidence score
-
-Timestamp
-
-Action taken
-
-CRM Customization
-Custom Fields
-
-AI_Intent
-
-AI_Sentiment
-
-AI_Confidence_Score
-
-SDR_Decision_Status
-
-Workflows
-
-Trigger on email reply
-
-Invoke Catalyst decision engine
-
-Update lead and deal lifecycle automatically
-
-Key Innovations
-
-Fully Zoho-native (no external dependencies)
-
-Explainable AI decisions
-
-Event-driven automation
-
-Built-in compliance handling
-
-Audit-ready decision logging
-
-This is not just automation — it is decision intelligence inside CRM.
-
-Demo Flow
-
-Send email from Zoho Mail
-
-Customer replies
-
-AI analyzes intent using Zia
-
-Catalyst applies rules
-
-CRM updates automatically
-
-Sales team receives actionable task
-
-End-to-end in seconds.
-
-Why This Scores High in Hackathons
-
-Strong real-world use case
-
-Deep Zoho ecosystem integration
-
-Clear system design
-
-No over-engineering
-
-High completion and deployability
-
-Enterprise-ready thinking
-
-Future Enhancements
-
-Multi-language intent detection
-
-AI confidence tuning using historical data
-
-Campaign-level performance analytics
-
-Cross-channel expansion (chat, forms)
-
-Conclusion
-
-Zoho AI-SDR demonstrates how AI, when used responsibly and natively, can transform sales workflows.
-It respects human decision-making, improves efficiency, and fits seamlessly into the Zoho ecosystem
+**Transform your sales process with AI-powered lead qualification in the Zoho ecosystem!**
